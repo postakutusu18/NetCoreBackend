@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,6 +20,7 @@ namespace WebApi.Controllers
             _categoryService = categoryService;
         }
 
+        [Authorize()]
         [HttpGet("getall")]
         public IActionResult GetList()
         {
