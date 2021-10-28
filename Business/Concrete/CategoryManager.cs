@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
-    public class ICategoryManager : ICategoryService
+    public class CategoryManager : ICategoryService
     {
         private ICategoryDal _categoryDal;
-        public ICategoryManager(ICategoryDal categoryDal)
+        public CategoryManager(ICategoryDal categoryDal)
         {
             _categoryDal = categoryDal;
         }

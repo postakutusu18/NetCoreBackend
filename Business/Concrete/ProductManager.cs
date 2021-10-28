@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Business.Concrete
@@ -14,37 +15,83 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         private IProductDal _productDal;
-        public ProductManager(IProductDal productDal)
+        private ICategoryService _categoryService;
+
+        public ProductManager(IProductDal productDal, ICategoryService categoryService)
         {
             _productDal = productDal;
+            _categoryService = categoryService;
         }
-        public IResult Add(Product entity)
+
+        public IDataResult<Product> GetById(int productId)
         {
-            _productDal.Add(entity);
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
+        }
+
+        public IDataResult<List<Product>> GetList()
+        {
+            Thread.Sleep(5000);
+            return new SuccessDataResult<List<Product>>(_productDal.GetList().ToList());
+        }
+
+        public IDataResult<List<Product>> GetListByCategory(int categoryId)
+        {
+            return new SuccessDataResult<List<Product>>(_productDal.GetList(p => p.CategoryId == categoryId).ToList());
+        }
+
+
+        public IResult Add(Product product)
+        {
+            //IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfCategoryIsEnabled());
+
+            //if (result != null)
+            //{
+            //    return result;
+            //}
+            _productDal.Add(product);
             return new SuccessResult(Messages.SuccessAdded);
         }
 
-        public IResult Delete(Product entity)
+        private IResult CheckIfProductNameExists(string productName)
         {
-            _productDal.Delete(entity);
+
+            var result = _productDal.GetList(p => p.ProductName == productName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.RecordAlreadyExist);
+            }
+
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfCategoryIsEnabled()
+        {
+            var result = _categoryService.GetAll();
+            if (result.Data.Count < 10)
+            {
+                return new ErrorResult(Messages.RecordAlreadyExist);
+            }
+
+            return new SuccessResult();
+        }
+
+        public IResult Delete(Product product)
+        {
+            _productDal.Delete(product);
             return new SuccessResult(Messages.SuccessDeleted);
         }
 
-        public IDataResult<List<Product>> GetAll()
+        public IResult Update(Product product)
         {
-            var result = _productDal.GetList().ToList();
-            return new SuccessDataResult<List<Product>>(result, Messages.SuccessListed);
+
+            _productDal.Update(product);
+            return new SuccessResult(Messages.SuccessUpdated);
         }
 
-        public IDataResult<Product> GetById(int id)
+         public IResult TransactionalOperation(Product product)
         {
-            var result = _productDal.Get(x => x.ProductId == id);
-            return new SuccessDataResult<Product>(result);
-        }
-
-        public IResult Update(Product entity)
-        {
-            _productDal.Update(entity);
+            _productDal.Update(product);
+            _productDal.Add(product);
             return new SuccessResult(Messages.SuccessUpdated);
         }
     }
