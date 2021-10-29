@@ -1,8 +1,12 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Transaction;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +43,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetList(p => p.CategoryId == categoryId).ToList());
         }
 
+        [ValidationAspect(typeof(ProductValidator), Priority = 1)]
 
         public IResult Add(Product product)
         {
@@ -48,8 +53,24 @@ namespace Business.Concrete
             //{
             //    return result;
             //}
-            _productDal.Add(product);
+
             return new SuccessResult(Messages.SuccessAdded);
+
+            //ProductValidator validator = new();
+            //ValidationResult result = validator.Validate(product);
+            //if (result.IsValid)
+            //{
+            //    _productDal.Add(product);
+            //    return new SuccessResult(Messages.SuccessAdded);
+            //}
+            //else
+            //{
+            //    string errorMessage = "";
+            //    foreach (var failure in result.Errors)
+            //        errorMessage += failure.ErrorMessage;
+            //   // errorMessage += "Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage;
+            //    return new ErrorResult(errorMessage);
+            //}
         }
 
         private IResult CheckIfProductNameExists(string productName)
@@ -87,10 +108,11 @@ namespace Business.Concrete
             _productDal.Update(product);
             return new SuccessResult(Messages.SuccessUpdated);
         }
+        [TransactionScopeAspect]
 
-         public IResult TransactionalOperation(Product product)
+        public IResult TransactionalOperation(Product product)
         {
-            _productDal.Update(product);
+             _productDal.Update(product);
             _productDal.Add(product);
             return new SuccessResult(Messages.SuccessUpdated);
         }
