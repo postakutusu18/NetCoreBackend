@@ -8,6 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Core.CrossCuttingConcerns.Logging.Log4Net;
+using Core.Aspects.Autofac.Logging;
+using Core.CrossCuttingConcerns.Logging;
+using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 
 namespace Core.Aspects.Autofac.Performance
 {
@@ -15,11 +19,13 @@ namespace Core.Aspects.Autofac.Performance
     {
         private int _interval;
         private Stopwatch _stopwatch;
+        private LoggerServiceBase _loggerServiceBase;
 
         public PerformanceAspect(int interval)
         {
             _interval = interval;
             _stopwatch = ServiceTool.ServiceProvider.GetService<Stopwatch>();
+            _loggerServiceBase = (LoggerServiceBase)Activator.CreateInstance(typeof(DatabaseLogger));
         }
 
 
@@ -32,9 +38,16 @@ namespace Core.Aspects.Autofac.Performance
         {
             if (_stopwatch.Elapsed.TotalSeconds > _interval)
             {
-                Debug.WriteLine($"Performance : {invocation.Method.DeclaringType.FullName}.{invocation.Method.Name}-->{_stopwatch.Elapsed.TotalSeconds}");
+                var methodName = string.Format($"{invocation.Method.ReflectedType.FullName}.{invocation.Method.Name}");
+
+                string logData = $"Metod Geç Çalışıyor :  {methodName} -->{_stopwatch.Elapsed.TotalSeconds}";
+               // Debug.WriteLine(logData);
+                _loggerServiceBase.Info(logData);
+
             }
             _stopwatch.Reset();
         }
+
+    
     }
 }

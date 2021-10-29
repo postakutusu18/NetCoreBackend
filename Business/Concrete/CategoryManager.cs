@@ -2,6 +2,7 @@
 using Business.BusinessAspects;
 using Business.Constants;
 using Core.Aspects.Autofac.Performance;
+using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -26,13 +27,13 @@ namespace Business.Concrete
             _categoryDal.Add(entity);
             return new SuccessResult(Messages.SuccessAdded);
         }
+        //[SecuredOperation("Product.List,Admin")]
 
         public IResult Delete(Category entity)
         {
             _categoryDal.Delete(entity);
             return new SuccessResult(Messages.SuccessDeleted);
         }
-        [SecuredOperation("Product.List,Admin")]
         [PerformanceAspect(5)]
 
 

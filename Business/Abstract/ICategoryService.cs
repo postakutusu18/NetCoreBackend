@@ -1,4 +1,5 @@
 ﻿using Business.Abstract.Repository;
+using Core.Utilities.Results;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,9 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-   public interface ICategoryService:IServiceRepository<Category>
+   public interface ICategoryService//:IServiceRepository<Category>
     {
+        IDataResult<List<Category>> GetAll();
+
     }
 }

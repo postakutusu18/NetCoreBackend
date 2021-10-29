@@ -2,8 +2,10 @@
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -38,6 +40,8 @@ namespace Business.Concrete
            // Thread.Sleep(5000);
             return new SuccessDataResult<List<Product>>(_productDal.GetList().ToList());
         }
+       // [LogAspect(typeof(FileLogger))]
+        [LogAspect(typeof(DatabaseLogger))]
 
         public IDataResult<List<Product>> GetListByCategory(int categoryId)
         {
