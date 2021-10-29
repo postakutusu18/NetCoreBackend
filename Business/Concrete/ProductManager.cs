@@ -5,6 +5,7 @@ using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
+using Core.Business;
 using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -53,13 +54,13 @@ namespace Business.Concrete
 
         public IResult Add(Product product)
         {
-            //IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfCategoryIsEnabled());
+            IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName), CheckIfCategoryIsEnabled());
 
-            //if (result != null)
-            //{
-            //    return result;
-            //}
-                _productDal.Add(product);
+            if (result != null)
+            {
+                return result;
+            }
+            _productDal.Add(product);
 
             return new SuccessResult(Messages.SuccessAdded);
 
