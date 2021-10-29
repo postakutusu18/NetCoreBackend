@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects;
 using Business.Constants;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -29,6 +30,8 @@ namespace Business.Concrete
             _categoryDal.Delete(entity);
             return new SuccessResult(Messages.SuccessDeleted);
         }
+        [SecuredOperation("Product.List,Admin")]
+
 
         public IDataResult<List<Category>> GetAll()
         {
