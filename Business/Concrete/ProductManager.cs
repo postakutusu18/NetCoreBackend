@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results;
@@ -31,10 +32,10 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
-
+        [CacheAspect(duration: 10)]
         public IDataResult<List<Product>> GetList()
         {
-            Thread.Sleep(5000);
+           // Thread.Sleep(5000);
             return new SuccessDataResult<List<Product>>(_productDal.GetList().ToList());
         }
 
@@ -44,6 +45,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(ProductValidator), Priority = 1)]
+        [CacheRemoveAspect("IProductService.Get")]
 
         public IResult Add(Product product)
         {
@@ -53,6 +55,7 @@ namespace Business.Concrete
             //{
             //    return result;
             //}
+                _productDal.Add(product);
 
             return new SuccessResult(Messages.SuccessAdded);
 
