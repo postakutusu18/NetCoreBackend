@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -35,8 +36,9 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
         }
-        [CacheAspect(duration: 10)]
-        public IDataResult<List<Product>> GetList()
+        //[CacheAspect(duration: 10)]
+        [SecuredOperation("Admin")]
+         public IDataResult<List<Product>> GetList()
         {
            // Thread.Sleep(5000);
             return new SuccessDataResult<List<Product>>(_productDal.GetList().ToList());

@@ -20,7 +20,7 @@ namespace WebApi.Controllers
             _categoryService = categoryService;
         }
 
-        [Authorize()]
+        //[Authorize()]
         [HttpGet("getall")]
         public IActionResult GetList()
         {

@@ -34,12 +34,11 @@ namespace Business.Concrete
             _categoryDal.Delete(entity);
             return new SuccessResult(Messages.SuccessDeleted);
         }
-        [PerformanceAspect(5)]
+        //[PerformanceAspect(5)]
 
 
         public IDataResult<List<Category>> GetAll()
         {
-            Thread.Sleep(5000);
 
             var result = _categoryDal.GetList().ToList();
 
